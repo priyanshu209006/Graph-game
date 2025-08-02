@@ -1,0 +1,554 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-container {
+    display: flex;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 1200px;
+    width: 90vw;
+    height: 90vh;
+    min-height: 700px;
+}
+
+.sidebar {
+    width: 350px;
+    padding: 30px;
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-y: auto;
+}
+
+.sidebar h1 {
+    color: #1e293b;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.instructions {
+    background: #e0f2fe;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #0284c7;
+}
+
+.instructions p {
+    color: #0f172a;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.equation-input h3,
+.equation-list h3 {
+    color: #374151;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.equation-input input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+}
+
+.equation-input input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.marble-start-input h3 {
+    color: #374151;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.coordinate-inputs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.coordinate-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.coordinate-group label {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.coordinate-group input {
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    transition: border-color 0.2s;
+    text-align: center;
+}
+
+.coordinate-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#addEquationBtn {
+    background: #10b981;
+    color: white;
+    width: 100%;
+}
+
+#addEquationBtn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+#addEquationBtn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#launchBtn {
+    background: #3b82f6;
+    color: white;
+}
+
+#launchBtn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+#resetBtn {
+    background: #f59e0b;
+    color: white;
+}
+
+#resetBtn:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+#newLevelBtn {
+    background: #8b5cf6;
+    color: white;
+}
+
+#newLevelBtn:hover {
+    background: #7c3aed;
+    transform: translateY(-1px);
+}
+
+.equation-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s;
+    gap: 10px;
+}
+
+.equation-item:hover {
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+}
+
+.equation-text {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    flex: 1;
+}
+
+.equation-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-btn {
+    background: #3b82f6;
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.edit-btn:hover {
+    background: #2563eb;
+}
+
+.equation-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.remove-btn {
+    background: #ef4444;
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.remove-btn:hover {
+    background: #dc2626;
+}
+
+.stats {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+}
+
+.stats p {
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.stats span {
+    color: #059669;
+    font-weight: 700;
+}
+
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: #ffffff;
+}
+
+.feedback {
+    margin-top: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.feedback.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 2px solid #22c55e;
+}
+
+.feedback.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 2px solid #ef4444;
+}
+
+.feedback.info {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 2px solid #3b82f6;
+}
+
+@media (max-width: 1024px) {
+    .game-container {
+        flex-direction: column;
+        height: auto;
+        max-height: 95vh;
+        width: 95vw;
+    }
+    
+    .sidebar {
+        width: 100%;
+        max-height: 40vh;
+        overflow-y: auto;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .sidebar h1 {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+    
+    .instructions {
+        padding: 12px;
+    }
+    
+    .instructions p {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
+    .equation-input input,
+    .coordinate-group input {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .game-area {
+        padding: 10px;
+        flex: 1;
+        min-height: 50vh;
+    }
+    
+    .feedback {
+        margin-top: 10px;
+        padding: 10px 15px;
+        font-size: 14px;
+        min-height: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        width: 98vw;
+        height: 98vh;
+        margin: 1vh 1vw;
+        border-radius: 10px;
+    }
+    
+    .sidebar {
+        padding: 12px;
+        gap: 12px;
+        max-height: 35vh;
+    }
+    
+    .sidebar h1 {
+        font-size: 18px;
+    }
+    
+    .equation-input h3,
+    .marble-start-input h3,
+    .equation-list h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .coordinate-inputs {
+        gap: 10px;
+    }
+    
+    .coordinate-group input {
+        padding: 8px;
+        font-size: 13px;
+    }
+    
+    .equation-input input {
+        padding: 8px;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .equation-item {
+        padding: 8px;
+        margin-bottom: 6px;
+    }
+    
+    .equation-text {
+        font-size: 12px;
+    }
+    
+    .remove-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .controls button {
+        flex: 1;
+        min-width: 80px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .stats {
+        padding: 12px;
+    }
+    
+    .stats p {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+    
+    .game-area {
+        padding: 8px;
+    }
+    
+    .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+        min-height: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        border-radius: 5px;
+    }
+    
+    .sidebar {
+        padding: 10px;
+        gap: 10px;
+        max-height: 30vh;
+    }
+    
+    .sidebar h1 {
+        font-size: 16px;
+    }
+    
+    .instructions {
+        padding: 8px;
+    }
+    
+    .instructions p {
+        font-size: 12px;
+    }
+    
+    .equation-input h3,
+    .marble-start-input h3,
+    .equation-list h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .coordinate-inputs {
+        gap: 8px;
+    }
+    
+    .coordinate-group label {
+        font-size: 12px;
+    }
+    
+    .coordinate-group input {
+        padding: 6px;
+        font-size: 12px;
+    }
+    
+    .equation-input input {
+        padding: 6px;
+        font-size: 13px;
+    }
+    
+    .controls button {
+        padding: 6px 10px;
+        font-size: 11px;
+        min-width: 70px;
+    }
+    
+    .equation-item {
+        padding: 6px;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .equation-text {
+        font-size: 11px;
+        word-break: break-all;
+        flex-basis: 100%;
+    }
+    
+    .equation-buttons {
+        gap: 4px;
+        flex-basis: 100%;
+        justify-content: flex-end;
+    }
+    
+    .edit-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+    
+    .remove-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+    
+    .stats {
+        padding: 8px;
+    }
+    
+    .stats p {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    
+    .feedback {
+        font-size: 12px;
+        padding: 6px 10px;
+        min-height: 30px;
+    }
+}
