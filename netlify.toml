@@ -1,0 +1,33 @@
+# Netlify configuration for Marbleslides
+
+[build]
+  # The public folder contains all static files
+  publish = "public"
+  
+  # No build command needed - static files only
+  # If you want to use Vite build, uncomment below:
+  # command = "npm run build"
+  # publish = "dist"
+
+# Redirect all requests to index.html (for SPA routing if needed)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for better performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

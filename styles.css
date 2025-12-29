@@ -1,3 +1,24 @@
+/* ===== MARBLESLIDES - COMPACT 3-COLUMN LAYOUT ===== */
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --radius: 10px;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,550 +26,783 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    padding: 12px;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+    display: grid;
+    grid-template-columns: 290px 1fr 230px;
+    gap: 12px;
+    height: 100%;
+}
+
+/* ===== LEFT PANEL ===== */
+.left-panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.logo-title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.help-link {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.game-container {
-    display: flex;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    max-width: 1200px;
-    width: 90vw;
-    height: 90vh;
-    min-height: 700px;
-}
-
-.sidebar {
-    width: 350px;
-    padding: 30px;
-    background: #f8fafc;
-    border-right: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    overflow-y: auto;
-}
-
-.sidebar h1 {
-    color: #1e293b;
-    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 10px;
-    text-align: center;
+    font-size: 12px;
 }
 
-.instructions {
-    background: #e0f2fe;
-    padding: 20px;
-    border-radius: 12px;
-    border-left: 4px solid #0284c7;
+.help-link:hover {
+    background: var(--primary);
+    color: white;
 }
 
-.instructions p {
-    color: #0f172a;
-    line-height: 1.6;
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.equation-input h3,
-.equation-list h3 {
-    color: #374151;
-    font-size: 18px;
-    margin-bottom: 15px;
+.form-group label {
+    display: block;
+    font-size: 10px;
     font-weight: 600;
-}
-
-.equation-input input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: 'Courier New', monospace;
-    margin-bottom: 12px;
-    transition: border-color 0.2s;
-}
-
-.equation-input input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.marble-start-input h3 {
-    color: #374151;
-    font-size: 18px;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.coordinate-inputs {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.coordinate-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.coordinate-group label {
-    color: #374151;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.coordinate-group input {
-    padding: 10px;
-    border: 2px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: 'Courier New', monospace;
-    transition: border-color 0.2s;
-    text-align: center;
-}
-
-.coordinate-group input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: var(--gray-500);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
-#addEquationBtn {
-    background: #10b981;
-    color: white;
+.coord-row {
+    display: flex;
+    gap: 8px;
+}
+
+.coord-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gray-50);
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
+}
+
+.coord-box span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+}
+
+.coord-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 13px;
+    text-align: center;
     width: 100%;
 }
 
-#addEquationBtn:hover {
-    background: #059669;
-    transform: translateY(-1px);
+.coord-box input:focus {
+    outline: none;
 }
 
-#addEquationBtn:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
+.eq-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--gray-200);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 14px;
 }
 
-.controls {
+.eq-field:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ===== CENTER PANEL ===== */
+.center-panel {
+    background: white;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+#gameCanvas {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 600px;
+}
+
+.toast {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.toast.success {
+    background: var(--green);
+    color: white;
+    opacity: 1;
+}
+
+.toast.error {
+    background: var(--red);
+    color: white;
+    opacity: 1;
+}
+
+.toast.info {
+    background: var(--primary);
+    color: white;
+    opacity: 1;
+}
+
+/* ===== RIGHT PANEL ===== */
+.right-panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-#launchBtn {
-    background: #3b82f6;
+.stats-row {
+    display: flex;
+    gap: 6px;
+}
+
+.stat-box {
+    flex: 1;
+    padding: 8px;
+    background: var(--gray-100);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.stat-box.accent {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
 }
 
-#launchBtn:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
+.eq-section {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-#resetBtn {
-    background: #f59e0b;
-    color: white;
+.eq-section label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
-#resetBtn:hover {
-    background: #d97706;
-    transform: translateY(-1px);
+.eq-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-#newLevelBtn {
-    background: #8b5cf6;
-    color: white;
-}
-
-#newLevelBtn:hover {
-    background: #7c3aed;
-    transform: translateY(-1px);
+.no-eq {
+    text-align: center;
+    color: var(--gray-400);
+    padding: 16px;
+    font-size: 12px;
 }
 
 .equation-item {
     display: flex;
     align-items: center;
-    padding: 12px;
-    background: white;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    border: 2px solid #e5e7eb;
-    transition: all 0.2s;
-    gap: 10px;
+    gap: 6px;
+    padding: 6px 8px;
+    background: var(--gray-50);
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
 }
 
-.equation-item:hover {
-    border-color: #d1d5db;
-    transform: translateY(-1px);
+.equation-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .equation-text {
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
     flex: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .equation-buttons {
     display: flex;
-    gap: 8px;
+    gap: 3px;
 }
 
-.edit-btn {
-    background: #3b82f6;
-    color: white;
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-}
-
-.edit-btn:hover {
-    background: #2563eb;
-}
-
-.equation-color {
+.edit-btn,
+.remove-btn {
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    margin-right: 10px;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.remove-btn {
-    background: #ef4444;
-    color: white;
-    padding: 6px 10px;
-    font-size: 12px;
+    border: none;
     border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    background: var(--gray-200);
 }
 
 .remove-btn:hover {
-    background: #dc2626;
+    background: var(--red);
+    color: white;
 }
 
-.stats {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 2px solid #e5e7eb;
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.stats p {
-    color: #374151;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.stats span {
-    color: #059669;
+.btn-launch {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 15px;
     font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s;
 }
 
-.game-area {
+.btn-launch:hover {
+    transform: translateY(-2px);
+}
+
+.btn-pair {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-small {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-small.orange {
+    background: var(--orange);
+}
+
+.btn-small.green {
+    background: var(--green);
+}
+
+/* ===== MATH KEYBOARD ===== */
+.math-keyboard {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 4px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    background: #ffffff;
+    min-height: 0;
 }
 
-.feedback {
-    margin-top: 20px;
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    min-height: 50px;
+.math-preview {
+    background: white;
+    padding: 6px;
+    min-height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 14px;
 }
 
-.feedback.success {
+.math-preview .preview-placeholder {
+    color: var(--gray-400);
+    font-size: 10px;
+    font-style: italic;
+}
+
+.keyboard-tabs {
+    display: flex;
+    background: var(--gray-100);
+    padding: 2px;
+    gap: 2px;
+}
+
+.keyboard-tab {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+}
+
+.keyboard-tab.active {
+    background: white;
+    color: var(--primary);
+}
+
+.keyboard-panel {
+    display: none;
+    padding: 5px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.keyboard-panel.active {
+    display: block;
+}
+
+.key-group {
+    margin-bottom: 5px;
+}
+
+.key-group:last-child {
+    margin-bottom: 0;
+}
+
+.key-group-title {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.keys-container {
+    display: grid;
+    gap: 2px;
+}
+
+.keys-container.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.keys-container.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.keys-container.grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.keyboard-key {
+    padding: 7px 3px;
+    border: 1px solid var(--gray-200);
+    background: white;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.keyboard-key:hover {
+    background: var(--gray-100);
+}
+
+.keyboard-key:active {
+    background: var(--gray-200);
+}
+
+.keyboard-key.key-number {
+    font-weight: 600;
+}
+
+.keyboard-key.key-operator {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.keyboard-key.key-function {
+    background: #eff6ff;
+    color: #3730a3;
+    font-size: 12px;
+}
+
+.keyboard-key.key-variable {
+    font-style: italic;
+    color: var(--green);
+}
+
+.keyboard-key.key-constant {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.keyboard-key.key-template {
     background: #dcfce7;
     color: #166534;
-    border: 2px solid #22c55e;
+    font-size: 12px;
 }
 
-.feedback.error {
+.keyboard-actions {
+    display: flex;
+    gap: 2px;
+    padding: 5px;
+    background: var(--gray-100);
+}
+
+.keyboard-action {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.keyboard-action.action-nav {
+    background: white;
+    color: var(--gray-500);
+    flex: 0.4;
+}
+
+.keyboard-action.action-delete {
     background: #fef2f2;
-    color: #dc2626;
-    border: 2px solid #ef4444;
+    color: var(--red);
 }
 
-.feedback.info {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 2px solid #3b82f6;
+.keyboard-action.action-clear {
+    background: #fff7ed;
+    color: #c2410c;
 }
 
-@media (max-width: 1024px) {
-    .game-container {
-        flex-direction: column;
+.keyboard-action.action-submit {
+    background: var(--green);
+    color: white;
+    flex: 1.2;
+}
+
+/* ===== RESPONSIVE - TABLET ===== */
+@media (max-width: 1100px) {
+    .app {
+        grid-template-columns: 260px 1fr 200px;
+    }
+}
+
+/* ===== RESPONSIVE - SMALL TABLET / LARGE PHONE ===== */
+@media (max-width: 900px) {
+    body {
+        padding: 8px;
         height: auto;
-        max-height: 95vh;
-        width: 95vw;
+        min-height: 100vh;
+        overflow: auto;
     }
-    
-    .sidebar {
-        width: 100%;
-        max-height: 40vh;
-        overflow-y: auto;
-        padding: 15px;
-        gap: 15px;
+
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        height: auto;
+        gap: 8px;
     }
-    
-    .sidebar h1 {
-        font-size: 20px;
-        margin-bottom: 5px;
-    }
-    
-    .instructions {
-        padding: 12px;
-    }
-    
-    .instructions p {
-        font-size: 13px;
-        margin-bottom: 6px;
-    }
-    
-    .equation-input input,
-    .coordinate-group input {
+
+    .left-panel {
+        order: 2;
+        max-height: none;
         padding: 10px;
-        font-size: 14px;
     }
-    
-    button {
-        padding: 10px 16px;
-        font-size: 13px;
+
+    .center-panel {
+        order: 1;
+        min-height: 320px;
+        aspect-ratio: 1;
+        max-width: 100%;
     }
-    
-    .game-area {
+
+    .right-panel {
+        order: 3;
         padding: 10px;
-        flex: 1;
-        min-height: 50vh;
     }
-    
-    .feedback {
-        margin-top: 10px;
-        padding: 10px 15px;
-        font-size: 14px;
-        min-height: 40px;
+
+    .logo-bar {
+        padding-bottom: 8px;
+    }
+
+    .logo-img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .logo-title {
+        font-size: 15px;
     }
 }
 
-@media (max-width: 768px) {
-    .game-container {
-        width: 98vw;
-        height: 98vh;
-        margin: 1vh 1vw;
-        border-radius: 10px;
+/* ===== RESPONSIVE - PHONE ===== */
+@media (max-width: 600px) {
+    body {
+        padding: 4px;
     }
-    
-    .sidebar {
-        padding: 12px;
-        gap: 12px;
-        max-height: 35vh;
-    }
-    
-    .sidebar h1 {
-        font-size: 18px;
-    }
-    
-    .equation-input h3,
-    .marble-start-input h3,
-    .equation-list h3 {
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-    
-    .coordinate-inputs {
-        gap: 10px;
-    }
-    
-    .coordinate-group input {
-        padding: 8px;
-        font-size: 13px;
-    }
-    
-    .equation-input input {
-        padding: 8px;
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-    
-    .equation-item {
-        padding: 8px;
-        margin-bottom: 6px;
-    }
-    
-    .equation-text {
-        font-size: 12px;
-    }
-    
-    .remove-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-    }
-    
-    .controls {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .controls button {
-        flex: 1;
-        min-width: 80px;
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    
-    .stats {
-        padding: 12px;
-    }
-    
-    .stats p {
-        font-size: 14px;
-        margin-bottom: 6px;
-    }
-    
-    .game-area {
-        padding: 8px;
-    }
-    
-    .feedback {
-        margin-top: 8px;
-        padding: 8px 12px;
-        font-size: 13px;
-        min-height: 35px;
-    }
-}
 
-@media (max-width: 480px) {
-    .game-container {
-        border-radius: 5px;
+    .app {
+        gap: 6px;
     }
-    
-    .sidebar {
-        padding: 10px;
-        gap: 10px;
-        max-height: 30vh;
-    }
-    
-    .sidebar h1 {
-        font-size: 16px;
-    }
-    
-    .instructions {
+
+    .left-panel,
+    .right-panel {
         padding: 8px;
-    }
-    
-    .instructions p {
-        font-size: 12px;
-    }
-    
-    .equation-input h3,
-    .marble-start-input h3,
-    .equation-list h3 {
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-    
-    .coordinate-inputs {
         gap: 8px;
     }
-    
-    .coordinate-group label {
-        font-size: 12px;
+
+    .center-panel {
+        min-height: 280px;
+        aspect-ratio: 1;
     }
-    
-    .coordinate-group input {
-        padding: 6px;
-        font-size: 12px;
-    }
-    
-    .equation-input input {
-        padding: 6px;
-        font-size: 13px;
-    }
-    
-    .controls button {
-        padding: 6px 10px;
-        font-size: 11px;
-        min-width: 70px;
-    }
-    
-    .equation-item {
-        padding: 6px;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-    
-    .equation-text {
-        font-size: 11px;
-        word-break: break-all;
-        flex-basis: 100%;
-    }
-    
-    .equation-buttons {
-        gap: 4px;
-        flex-basis: 100%;
-        justify-content: flex-end;
-    }
-    
-    .edit-btn {
-        padding: 3px 6px;
-        font-size: 10px;
-    }
-    
-    .remove-btn {
-        padding: 3px 6px;
-        font-size: 10px;
-    }
-    
-    .stats {
-        padding: 8px;
-    }
-    
-    .stats p {
-        font-size: 12px;
+
+    .form-group label {
+        font-size: 9px;
         margin-bottom: 4px;
     }
-    
-    .feedback {
+
+    .coord-box {
+        padding: 5px 8px;
+    }
+
+    .coord-box input {
         font-size: 12px;
-        padding: 6px 10px;
-        min-height: 30px;
+    }
+
+    .eq-field {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .stats-row {
+        gap: 4px;
+    }
+
+    .stat-box {
+        padding: 6px;
+        font-size: 11px;
+    }
+
+    .btn-launch {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .btn-small {
+        padding: 7px;
+        font-size: 11px;
+    }
+
+    /* Keyboard mobile */
+    .math-keyboard {
+        margin-top: 4px;
+    }
+
+    .math-preview {
+        padding: 4px;
+        min-height: 26px;
+        font-size: 13px;
+    }
+
+    .keyboard-tabs {
+        padding: 2px;
+    }
+
+    .keyboard-tab {
+        padding: 4px 2px;
+        font-size: 9px;
+    }
+
+    .keyboard-panel {
+        padding: 4px;
+    }
+
+    .key-group {
+        margin-bottom: 4px;
+    }
+
+    .key-group-title {
+        font-size: 7px;
+        margin-bottom: 2px;
+    }
+
+    .keys-container {
+        gap: 2px;
+    }
+
+    .keyboard-key {
+        padding: 4px 2px;
+        font-size: 10px;
+        min-height: 24px;
+    }
+
+    .keyboard-key.key-function,
+    .keyboard-key.key-template {
+        font-size: 9px;
+    }
+
+    .keyboard-actions {
+        padding: 4px;
+        gap: 2px;
+    }
+
+    .keyboard-action {
+        padding: 5px;
+        font-size: 9px;
+    }
+
+    .equation-item {
+        padding: 5px 6px;
+    }
+
+    .equation-text {
+        font-size: 10px;
+    }
+
+    .edit-btn,
+    .remove-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+    }
+
+    .toast {
+        padding: 6px 14px;
+        font-size: 11px;
+        bottom: 8px;
+    }
+}
+
+/* ===== RESPONSIVE - SMALL PHONE ===== */
+@media (max-width: 400px) {
+    .logo-img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .logo-title {
+        font-size: 14px;
+    }
+
+    .help-link {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+
+    .center-panel {
+        max-height: 40vh;
+        min-height: 200px;
+    }
+
+    .keyboard-key {
+        padding: 3px 1px;
+        font-size: 9px;
+        min-height: 22px;
+    }
+
+    .keys-container.grid-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ===== LANDSCAPE PHONE ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        overflow: auto;
+    }
+
+    .app {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        height: auto;
+    }
+
+    .left-panel {
+        order: 1;
+        max-height: none;
+    }
+
+    .center-panel {
+        order: 2;
+        min-height: 280px;
+    }
+
+    .right-panel {
+        display: none;
     }
 }
