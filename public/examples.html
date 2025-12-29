@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Equation Examples | Marbleslides</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .examples-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--gray-100);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page-title {
+            flex: 1;
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-header {
+            padding: 16px 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            font-size: 24px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .category-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .category-body {
+            padding: 20px;
+        }
+
+        .equation-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .equation-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--gray-100);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .equation-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 14px;
+        }
+
+        .equation-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .equation-code {
+            font-family: var(--font-mono);
+            background: var(--gray-50);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--primary-dark);
+            display: inline-block;
+        }
+
+        .try-btn {
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .try-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .highlight-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid var(--accent);
+        }
+
+        .highlight-card .category-header {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: var(--accent);
+        }
+
+        .syntax-box {
+            background: var(--gray-800);
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .syntax-box .keyword {
+            color: #f472b6;
+        }
+
+        .syntax-box .variable {
+            color: #67e8f9;
+        }
+
+        .syntax-box .condition {
+            color: #fbbf24;
+        }
+
+        .tip-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .tip-box strong {
+            color: var(--primary);
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .example-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: 0.2s;
+        }
+
+        .example-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .example-card .eq {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .example-card .desc {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        @media (max-width: 768px) {
+            .examples-container {
+                padding: 12px;
+            }
+
+            .category-body {
+                padding: 12px;
+            }
+
+            .equation-table {
+                font-size: 12px;
+            }
+
+            .equation-table th,
+            .equation-table td {
+                padding: 8px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="examples-container">
+        <!-- Header -->
+        <header class="back-header">
+            <a href="index.html" class="back-btn">← Back to Game</a>
+            <h1 class="page-title">📚 Equation Examples</h1>
+        </header>
+
+        <!-- PIECEWISE FUNCTIONS - HIGHLIGHTED -->
+        <div class="category-card highlight-card">
+            <div class="category-header">
+                <span class="category-icon">✂️</span>
+                <div>
+                    <div class="category-title">Piecewise Functions</div>
+                    <div class="category-subtitle">Domain-restricted equations with conditions</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <p style="margin-bottom: 16px; color: var(--gray-700);">
+                    Piecewise functions let you define equations that only apply within specific ranges.
+                    Use curly braces <code>{}</code> to add conditions.
+                </p>
+
+                <h4 style="font-size: 14px; color: var(--gray-700); margin-bottom: 8px;">📝 Syntax</h4>
+                <div class="syntax-box">
+                    <span class="keyword">y</span> = <span class="variable">expression</span> {<span
+                        class="condition">condition</span>}
+                </div>
+
+                <h4 style="font-size: 14px; color: var(--gray-700); margin: 16px 0 8px;">📌 Examples</h4>
+                <table class="equation-table">
+                    <tr>
+                        <th style="width: 35%;">Equation</th>
+                        <th>Description</th>
+                        <th style="width: 70px;">Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x {x > 0}</code></td>
+                        <td>Line only for positive x</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x {x > 0}')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x^2 {x >= 0}</code></td>
+                        <td>Right half of parabola</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x^2 {x >= 0}')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x {0 < x < 5}</code></td>
+                        <td>Line between x=0 and x=5</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x {0 < x < 5}')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = sin(x) {x > 0}</code></td>
+                        <td>Sine wave for positive x</td>
+                        <td><button class="try-btn" onclick="tryEq('y = sin(x) {x > 0}')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = -x + 5 {0 < x < 5}</code></td>
+                        <td>Slanted ramp segment</td>
+                        <td><button class="try-btn" onclick="tryEq('y = -x + 5 {0 < x < 5}')">Try</button></td>
+                    </tr>
+                </table>
+
+                <div class="tip-box">
+                    <strong>💡 Tip:</strong> Use piecewise functions to create ramps, platforms, and
+                    obstacles that only exist in certain areas of the graph!
+                </div>
+
+                <h4 style="font-size: 14px; color: var(--gray-700); margin: 16px 0 8px;">🔧 Supported Operators</h4>
+                <table class="equation-table">
+                    <tr>
+                        <th>Operator</th>
+                        <th>Meaning</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">&gt;</code></td>
+                        <td>Greater than</td>
+                        <td><code class="equation-code">x > 0</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">&lt;</code></td>
+                        <td>Less than</td>
+                        <td><code class="equation-code">x < 5</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">&gt;=</code></td>
+                        <td>Greater than or equal</td>
+                        <td><code class="equation-code">x >= -2</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">&lt;=</code></td>
+                        <td>Less than or equal</td>
+                        <td><code class="equation-code">x <= 10</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">0 &lt; x &lt; 5</code></td>
+                        <td>Range (between)</td>
+                        <td><code class="equation-code">y = x {0 < x < 5}</code></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- BASIC FUNCTIONS -->
+        <div class="category-card">
+            <div class="category-header">
+                <span class="category-icon">📈</span>
+                <div>
+                    <div class="category-title">Basic Functions</div>
+                    <div class="category-subtitle">Lines, parabolas, and polynomials</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <table class="equation-table">
+                    <tr>
+                        <th>Equation</th>
+                        <th>Description</th>
+                        <th>Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x</code></td>
+                        <td>Diagonal line through origin</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = 2x + 1</code></td>
+                        <td>Line with slope 2, y-intercept 1</td>
+                        <td><button class="try-btn" onclick="tryEq('y = 2x + 1')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x^2</code></td>
+                        <td>Parabola opening upward</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x^2')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = -x^2 + 5</code></td>
+                        <td>Upside-down parabola</td>
+                        <td><button class="try-btn" onclick="tryEq('y = -x^2 + 5')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = x^3</code></td>
+                        <td>Cubic curve</td>
+                        <td><button class="try-btn" onclick="tryEq('y = x^3')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">x = 5</code></td>
+                        <td>Vertical line at x=5</td>
+                        <td><button class="try-btn" onclick="tryEq('x = 5')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = 3</code></td>
+                        <td>Horizontal line at y=3</td>
+                        <td><button class="try-btn" onclick="tryEq('y = 3')">Try</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- CIRCLES & CONICS -->
+        <div class="category-card">
+            <div class="category-header">
+                <span class="category-icon">🔵</span>
+                <div>
+                    <div class="category-title">Circles & Conics</div>
+                    <div class="category-subtitle">Implicit equations with x and y</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <table class="equation-table">
+                    <tr>
+                        <th>Equation</th>
+                        <th>Description</th>
+                        <th>Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">x^2 + y^2 = 25</code></td>
+                        <td>Circle, radius 5, centered at origin</td>
+                        <td><button class="try-btn" onclick="tryEq('x^2 + y^2 = 25')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">(x-2)^2 + (y-3)^2 = 9</code></td>
+                        <td>Circle centered at (2, 3)</td>
+                        <td><button class="try-btn" onclick="tryEq('(x-2)^2 + (y-3)^2 = 9')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">x^2/9 + y^2/4 = 1</code></td>
+                        <td>Ellipse</td>
+                        <td><button class="try-btn" onclick="tryEq('x^2/9 + y^2/4 = 1')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">x = y^2</code></td>
+                        <td>Parabola opening right</td>
+                        <td><button class="try-btn" onclick="tryEq('x = y^2')">Try</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- TRIGONOMETRIC -->
+        <div class="category-card">
+            <div class="category-header">
+                <span class="category-icon">🌊</span>
+                <div>
+                    <div class="category-title">Trigonometric Functions</div>
+                    <div class="category-subtitle">Sine, cosine, and tangent waves</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <table class="equation-table">
+                    <tr>
+                        <th>Equation</th>
+                        <th>Description</th>
+                        <th>Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = sin(x)</code></td>
+                        <td>Sine wave</td>
+                        <td><button class="try-btn" onclick="tryEq('y = sin(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = cos(x)</code></td>
+                        <td>Cosine wave</td>
+                        <td><button class="try-btn" onclick="tryEq('y = cos(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = tan(x)</code></td>
+                        <td>Tangent (with asymptotes)</td>
+                        <td><button class="try-btn" onclick="tryEq('y = tan(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = 2*sin(x)</code></td>
+                        <td>Taller sine wave (amplitude 2)</td>
+                        <td><button class="try-btn" onclick="tryEq('y = 2*sin(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = sin(2*x)</code></td>
+                        <td>Compressed sine wave</td>
+                        <td><button class="try-btn" onclick="tryEq('y = sin(2*x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = sin(x) + 2</code></td>
+                        <td>Sine wave shifted up</td>
+                        <td><button class="try-btn" onclick="tryEq('y = sin(x) + 2')">Try</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- POLAR -->
+        <div class="category-card">
+            <div class="category-header">
+                <span class="category-icon">🌀</span>
+                <div>
+                    <div class="category-title">Polar Equations</div>
+                    <div class="category-subtitle">Spirals, roses, and more (r = f(θ))</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <p style="margin-bottom: 12px; color: var(--gray-600); font-size: 14px;">
+                    Use <code>r</code> for radius and <code>theta</code> for angle θ.
+                </p>
+                <table class="equation-table">
+                    <tr>
+                        <th>Equation</th>
+                        <th>Description</th>
+                        <th>Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = 5</code></td>
+                        <td>Circle (radius 5)</td>
+                        <td><button class="try-btn" onclick="tryEq('r = 5')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = theta</code></td>
+                        <td>Spiral</td>
+                        <td><button class="try-btn" onclick="tryEq('r = theta')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = sin(3*theta)</code></td>
+                        <td>3-petal rose</td>
+                        <td><button class="try-btn" onclick="tryEq('r = sin(3*theta)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = cos(4*theta)</code></td>
+                        <td>8-petal rose</td>
+                        <td><button class="try-btn" onclick="tryEq('r = cos(4*theta)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = 1 + cos(theta)</code></td>
+                        <td>Cardioid (heart shape)</td>
+                        <td><button class="try-btn" onclick="tryEq('r = 1 + cos(theta)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">r = 2 + sin(theta)</code></td>
+                        <td>Limaçon</td>
+                        <td><button class="try-btn" onclick="tryEq('r = 2 + sin(theta)')">Try</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ADVANCED -->
+        <div class="category-card">
+            <div class="category-header">
+                <span class="category-icon">📊</span>
+                <div>
+                    <div class="category-title">Advanced Functions</div>
+                    <div class="category-subtitle">Square roots, logs, exponentials, and more</div>
+                </div>
+            </div>
+            <div class="category-body">
+                <table class="equation-table">
+                    <tr>
+                        <th>Equation</th>
+                        <th>Description</th>
+                        <th>Try</th>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = sqrt(x)</code></td>
+                        <td>Square root curve</td>
+                        <td><button class="try-btn" onclick="tryEq('y = sqrt(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = abs(x)</code></td>
+                        <td>Absolute value (V shape)</td>
+                        <td><button class="try-btn" onclick="tryEq('y = abs(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = ln(x)</code></td>
+                        <td>Natural logarithm</td>
+                        <td><button class="try-btn" onclick="tryEq('y = ln(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = log(x)</code></td>
+                        <td>Logarithm base 10</td>
+                        <td><button class="try-btn" onclick="tryEq('y = log(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = e^x</code></td>
+                        <td>Exponential growth</td>
+                        <td><button class="try-btn" onclick="tryEq('y = e^x')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = 2^x</code></td>
+                        <td>Power of 2</td>
+                        <td><button class="try-btn" onclick="tryEq('y = 2^x')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = floor(x)</code></td>
+                        <td>Step function (floor)</td>
+                        <td><button class="try-btn" onclick="tryEq('y = floor(x)')">Try</button></td>
+                    </tr>
+                    <tr>
+                        <td><code class="equation-code">y = 1/x</code></td>
+                        <td>Hyperbola</td>
+                        <td><button class="try-btn" onclick="tryEq('y = 1/x')">Try</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; color: white; opacity: 0.8; font-size: 14px;">
+            <a href="index.html" style="color: white;">← Back to Game</a>
+        </div>
+    </div>
+
+    <script>
+        function tryEq(equation) {
+            // Store in localStorage and redirect
+            localStorage.setItem('tryEquation', equation);
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

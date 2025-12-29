@@ -1,0 +1,808 @@
+/* ===== MARBLESLIDES - COMPACT 3-COLUMN LAYOUT ===== */
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --radius: 10px;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh;
+    overflow: hidden;
+    padding: 12px;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+    display: grid;
+    grid-template-columns: 290px 1fr 230px;
+    gap: 12px;
+    height: 100%;
+}
+
+/* ===== LEFT PANEL ===== */
+.left-panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.logo-title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.help-link {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.help-link:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.form-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.coord-row {
+    display: flex;
+    gap: 8px;
+}
+
+.coord-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gray-50);
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
+}
+
+.coord-box span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+}
+
+.coord-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 13px;
+    text-align: center;
+    width: 100%;
+}
+
+.coord-box input:focus {
+    outline: none;
+}
+
+.eq-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--gray-200);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 14px;
+}
+
+.eq-field:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ===== CENTER PANEL ===== */
+.center-panel {
+    background: white;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+#gameCanvas {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 600px;
+}
+
+.toast {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.toast.success {
+    background: var(--green);
+    color: white;
+    opacity: 1;
+}
+
+.toast.error {
+    background: var(--red);
+    color: white;
+    opacity: 1;
+}
+
+.toast.info {
+    background: var(--primary);
+    color: white;
+    opacity: 1;
+}
+
+/* ===== RIGHT PANEL ===== */
+.right-panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stats-row {
+    display: flex;
+    gap: 6px;
+}
+
+.stat-box {
+    flex: 1;
+    padding: 8px;
+    background: var(--gray-100);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.stat-box.accent {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.eq-section {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.eq-section label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.eq-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.no-eq {
+    text-align: center;
+    color: var(--gray-400);
+    padding: 16px;
+    font-size: 12px;
+}
+
+.equation-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: var(--gray-50);
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
+}
+
+.equation-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.equation-text {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.equation-buttons {
+    display: flex;
+    gap: 3px;
+}
+
+.edit-btn,
+.remove-btn {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    background: var(--gray-200);
+}
+
+.remove-btn:hover {
+    background: var(--red);
+    color: white;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-launch {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.btn-launch:hover {
+    transform: translateY(-2px);
+}
+
+.btn-pair {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-small {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-small.orange {
+    background: var(--orange);
+}
+
+.btn-small.green {
+    background: var(--green);
+}
+
+/* ===== MATH KEYBOARD ===== */
+.math-keyboard {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.math-preview {
+    background: white;
+    padding: 6px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 14px;
+}
+
+.math-preview .preview-placeholder {
+    color: var(--gray-400);
+    font-size: 10px;
+    font-style: italic;
+}
+
+.keyboard-tabs {
+    display: flex;
+    background: var(--gray-100);
+    padding: 2px;
+    gap: 2px;
+}
+
+.keyboard-tab {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+}
+
+.keyboard-tab.active {
+    background: white;
+    color: var(--primary);
+}
+
+.keyboard-panel {
+    display: none;
+    padding: 5px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.keyboard-panel.active {
+    display: block;
+}
+
+.key-group {
+    margin-bottom: 5px;
+}
+
+.key-group:last-child {
+    margin-bottom: 0;
+}
+
+.key-group-title {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.keys-container {
+    display: grid;
+    gap: 2px;
+}
+
+.keys-container.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.keys-container.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.keys-container.grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.keyboard-key {
+    padding: 7px 3px;
+    border: 1px solid var(--gray-200);
+    background: white;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.keyboard-key:hover {
+    background: var(--gray-100);
+}
+
+.keyboard-key:active {
+    background: var(--gray-200);
+}
+
+.keyboard-key.key-number {
+    font-weight: 600;
+}
+
+.keyboard-key.key-operator {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.keyboard-key.key-function {
+    background: #eff6ff;
+    color: #3730a3;
+    font-size: 12px;
+}
+
+.keyboard-key.key-variable {
+    font-style: italic;
+    color: var(--green);
+}
+
+.keyboard-key.key-constant {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.keyboard-key.key-template {
+    background: #dcfce7;
+    color: #166534;
+    font-size: 12px;
+}
+
+.keyboard-actions {
+    display: flex;
+    gap: 2px;
+    padding: 5px;
+    background: var(--gray-100);
+}
+
+.keyboard-action {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.keyboard-action.action-nav {
+    background: white;
+    color: var(--gray-500);
+    flex: 0.4;
+}
+
+.keyboard-action.action-delete {
+    background: #fef2f2;
+    color: var(--red);
+}
+
+.keyboard-action.action-clear {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.keyboard-action.action-submit {
+    background: var(--green);
+    color: white;
+    flex: 1.2;
+}
+
+/* ===== RESPONSIVE - TABLET ===== */
+@media (max-width: 1100px) {
+    .app {
+        grid-template-columns: 260px 1fr 200px;
+    }
+}
+
+/* ===== RESPONSIVE - SMALL TABLET / LARGE PHONE ===== */
+@media (max-width: 900px) {
+    body {
+        padding: 8px;
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+    }
+
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        height: auto;
+        gap: 8px;
+    }
+
+    .left-panel {
+        order: 2;
+        max-height: none;
+        padding: 10px;
+    }
+
+    .center-panel {
+        order: 1;
+        min-height: 320px;
+        aspect-ratio: 1;
+        max-width: 100%;
+    }
+
+    .right-panel {
+        order: 3;
+        padding: 10px;
+    }
+
+    .logo-bar {
+        padding-bottom: 8px;
+    }
+
+    .logo-img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .logo-title {
+        font-size: 15px;
+    }
+}
+
+/* ===== RESPONSIVE - PHONE ===== */
+@media (max-width: 600px) {
+    body {
+        padding: 4px;
+    }
+
+    .app {
+        gap: 6px;
+    }
+
+    .left-panel,
+    .right-panel {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .center-panel {
+        min-height: 280px;
+        aspect-ratio: 1;
+    }
+
+    .form-group label {
+        font-size: 9px;
+        margin-bottom: 4px;
+    }
+
+    .coord-box {
+        padding: 5px 8px;
+    }
+
+    .coord-box input {
+        font-size: 12px;
+    }
+
+    .eq-field {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .stats-row {
+        gap: 4px;
+    }
+
+    .stat-box {
+        padding: 6px;
+        font-size: 11px;
+    }
+
+    .btn-launch {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .btn-small {
+        padding: 7px;
+        font-size: 11px;
+    }
+
+    /* Keyboard mobile */
+    .math-keyboard {
+        margin-top: 4px;
+    }
+
+    .math-preview {
+        padding: 4px;
+        min-height: 26px;
+        font-size: 13px;
+    }
+
+    .keyboard-tabs {
+        padding: 2px;
+    }
+
+    .keyboard-tab {
+        padding: 4px 2px;
+        font-size: 9px;
+    }
+
+    .keyboard-panel {
+        padding: 4px;
+    }
+
+    .key-group {
+        margin-bottom: 4px;
+    }
+
+    .key-group-title {
+        font-size: 7px;
+        margin-bottom: 2px;
+    }
+
+    .keys-container {
+        gap: 2px;
+    }
+
+    .keyboard-key {
+        padding: 4px 2px;
+        font-size: 10px;
+        min-height: 24px;
+    }
+
+    .keyboard-key.key-function,
+    .keyboard-key.key-template {
+        font-size: 9px;
+    }
+
+    .keyboard-actions {
+        padding: 4px;
+        gap: 2px;
+    }
+
+    .keyboard-action {
+        padding: 5px;
+        font-size: 9px;
+    }
+
+    .equation-item {
+        padding: 5px 6px;
+    }
+
+    .equation-text {
+        font-size: 10px;
+    }
+
+    .edit-btn,
+    .remove-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+    }
+
+    .toast {
+        padding: 6px 14px;
+        font-size: 11px;
+        bottom: 8px;
+    }
+}
+
+/* ===== RESPONSIVE - SMALL PHONE ===== */
+@media (max-width: 400px) {
+    .logo-img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .logo-title {
+        font-size: 14px;
+    }
+
+    .help-link {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+
+    .center-panel {
+        max-height: 40vh;
+        min-height: 200px;
+    }
+
+    .keyboard-key {
+        padding: 3px 1px;
+        font-size: 9px;
+        min-height: 22px;
+    }
+
+    .keys-container.grid-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ===== LANDSCAPE PHONE ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        overflow: auto;
+    }
+
+    .app {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        height: auto;
+    }
+
+    .left-panel {
+        order: 1;
+        max-height: none;
+    }
+
+    .center-panel {
+        order: 2;
+        min-height: 280px;
+    }
+
+    .right-panel {
+        display: none;
+    }
+}
