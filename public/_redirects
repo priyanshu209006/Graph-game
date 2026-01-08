@@ -1,1 +1,3 @@
+# SPA fallback - real files like ads.txt are served directly
+# The 200 status without ! means it only redirects if file doesn't exist
 /*    /index.html   200
