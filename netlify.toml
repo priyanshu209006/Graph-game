@@ -1,19 +1,21 @@
 # Netlify configuration for Marbleslides
 
 [build]
-  # The public folder contains all static files
-  publish = "public"
+  # Deploy from root directory where all files are located
+  publish = "."
   
   # No build command needed - static files only
   # If you want to use Vite build, uncomment below:
   # command = "npm run build"
   # publish = "dist"
 
-# Redirect all requests to index.html (for SPA routing if needed)
+# SPA fallback - serve index.html only for non-existent paths
+# force = false means real files (like ads.txt) are served directly
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
 
 # Headers for better performance
 [[headers]]
