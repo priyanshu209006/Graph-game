@@ -175,7 +175,7 @@ class EquationParser {
             cleanEquation = cleanEquation.substring(cleanEquation.indexOf('=') + 1).trim();
         }
 
-        cleanEquation = this.preprocessEquation(cleanEquation);
+        cleanEquation = this.preprocessAdvancedEquation(cleanEquation);
 
         const expr = math.parse(cleanEquation);
         const compiled = expr.compile();
@@ -222,7 +222,7 @@ class EquationParser {
             cleanEquation = cleanEquation.substring(cleanEquation.indexOf('=') + 1).trim();
         }
 
-        cleanEquation = this.preprocessEquation(cleanEquation.replace(/\bx\b/g, 'y')); // Replace standalone x with y for evaluation
+        cleanEquation = this.preprocessAdvancedEquation(cleanEquation.replace(/\bx\b/g, 'y')); // Replace standalone x with y for evaluation
 
         const expr = math.parse(cleanEquation);
         const compiled = expr.compile();
@@ -321,8 +321,8 @@ class EquationParser {
             throw new Error('Implicit equation must have exactly one = sign');
         }
 
-        let leftSide = this.preprocessEquation(parts[0].trim());
-        let rightSide = this.preprocessEquation(parts[1].trim());
+        let leftSide = this.preprocessAdvancedEquation(parts[0].trim());
+        let rightSide = this.preprocessAdvancedEquation(parts[1].trim());
 
         // Create function f(x,y) = leftSide - rightSide
         const expression = `(${leftSide}) - (${rightSide})`;
@@ -418,7 +418,7 @@ class EquationParser {
 
         // Replace theta symbols
         cleanEquation = cleanEquation.replace(/θ/g, 'theta');
-        cleanEquation = this.preprocessEquation(cleanEquation);
+        cleanEquation = this.preprocessAdvancedEquation(cleanEquation);
 
         const expr = math.parse(cleanEquation);
         const compiled = expr.compile();
@@ -478,8 +478,8 @@ class EquationParser {
             yPart = yPart.substring(yPart.indexOf('=') + 1).trim();
         }
 
-        xPart = this.preprocessEquation(xPart);
-        yPart = this.preprocessEquation(yPart);
+        xPart = this.preprocessAdvancedEquation(xPart);
+        yPart = this.preprocessAdvancedEquation(yPart);
 
         const xExpr = math.parse(xPart);
         const yExpr = math.parse(yPart);
@@ -548,8 +548,8 @@ class EquationParser {
             throw new Error('Invalid inequality format');
         }
 
-        let leftSide = this.preprocessEquation(parts[0].trim());
-        let rightSide = this.preprocessEquation(parts[1].trim());
+        let leftSide = this.preprocessAdvancedEquation(parts[0].trim());
+        let rightSide = this.preprocessAdvancedEquation(parts[1].trim());
 
         // Create comparison function
         const expression = `(${leftSide}) - (${rightSide})`;
@@ -616,7 +616,7 @@ class EquationParser {
             // Parse condition (supports single and double conditions like "0 < x < 5")
             const conditions = this.parseConditions(condition);
 
-            expression = this.preprocessEquation(expression);
+            expression = this.preprocessAdvancedEquation(expression);
             const expr = math.parse(expression);
             const compiled = expr.compile();
 
@@ -804,7 +804,7 @@ class EquationParser {
         equation = equation.replace(/\)(\d)/g, ')*$1');
 
         // Handle x2 -> x*2 (but be careful with function names)
-        equation = equation.replace(/([a-zA-Z])(\d)/g, '$1*$2');
+        equation = equation.replace(/\b([xyt])(\d)/gi, '$1*$2');
 
         // Clean up any double multiplication signs
         equation = equation.replace(/\*\*/g, '^');
@@ -815,6 +815,7 @@ class EquationParser {
 
     preprocessAdvancedEquation(equation) {
         const functionNames = this.mathFunctions
+            .filter(name => name !== 'log')
             .concat(['logBase', 'naturalLog'])
             .sort((a, b) => b.length - a.length);
         const functionAlternates = functionNames.join('|');
@@ -828,8 +829,6 @@ class EquationParser {
             .replace(/[×·]/g, '*')
             .replace(/÷/g, '/');
 
-        equation = this.preprocessEquation(equation);
-
         equation = equation.replace(/\bceiling\b/gi, 'ceil');
         equation = equation.replace(/\bsignum\b/gi, 'sign');
         equation = equation.replace(/\bminimum\b/gi, 'min');
@@ -840,10 +839,27 @@ class EquationParser {
         equation = equation.replace(/\bln\s*\(/gi, 'naturalLog(');
         equation = equation.replace(/\blog_([a-zA-Z0-9.]+)\s*\(([^()]*)\)/gi, 'logBase($2,$1)');
         equation = equation.replace(/\blog\s*\(([^,()]+)\s*,\s*([^()]*)\)/gi, 'logBase($2,$1)');
-        equation = equation.replace(/\blog\s*\(/gi, 'log10(');
+        equation = equation.replace(/\blog10\s*\(([^()]*)\)/gi, 'logBase($1,10)');
+        equation = equation.replace(/\blog2\s*\(([^()]*)\)/gi, 'logBase($1,2)');
+        equation = equation.replace(/\blog\s*\(([^()]*)\)/gi, 'logBase($1,10)');
 
         equation = equation.replace(new RegExp(`\\b(${functionAlternates})([a-zA-Z])`, 'gi'), '$1($2)');
         equation = equation.replace(new RegExp(`\\b(${functionAlternates})(\\d)`, 'gi'), '$1($2)');
+
+        equation = equation.replace(/\barcsin\b/gi, 'asin');
+        equation = equation.replace(/\barccos\b/gi, 'acos');
+        equation = equation.replace(/\barctan\b/gi, 'atan');
+        equation = equation.replace(/\barcsec\b/gi, 'asec');
+        equation = equation.replace(/\barccsc\b/gi, 'acsc');
+        equation = equation.replace(/\barccot\b/gi, 'acot');
+
+        equation = equation.replace(/\be\^/g, 'exp(');
+        equation = equation.replace(/exp\(([^()]+)\)/g, 'exp($1)');
+        equation = equation.replace(/exp\(([a-zA-Z0-9\.\+\-\*\/\^]+)(?!\))/g, 'exp($1)');
+
+        equation = equation.replace(/(\d)([a-zA-Z])/g, '$1*$2');
+        equation = equation.replace(/\)\(/g, ')*(');
+        equation = equation.replace(/\)([a-zA-Z])/g, ')*$1');
 
         equation = equation.replace(/([a-zA-Z])(\()/g, (match, letter, paren, offset, str) => {
             const before = str.substring(0, offset + 1).toLowerCase();
@@ -852,6 +868,12 @@ class EquationParser {
             }
             return letter + '*' + paren;
         });
+
+        equation = equation.replace(/(\d)(\()/g, '$1*$2');
+        equation = equation.replace(/\)(\d)/g, ')*$1');
+        equation = equation.replace(/\b([xyt])(\d)/gi, '$1*$2');
+        equation = equation.replace(/\*\*/g, '^');
+        equation = equation.replace(/\*\*/g, '*');
 
         return equation;
     }

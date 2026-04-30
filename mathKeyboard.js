@@ -73,13 +73,16 @@ class MathKeyboard {
                 { label: 'sqrt', value: 'sqrt(', type: 'function' },
                 { label: '1/x', value: '1/', type: 'fraction' },
                 { label: 'abs', value: 'abs(', type: 'function' },
-                { label: 'floor', value: 'floor(', type: 'function' },
-                { label: 'ceil', value: 'ceil(', type: 'function' }
+                { label: 'cbrt', value: 'cbrt(', type: 'function' },
+                { label: 'root', value: 'root(', type: 'function' }
             ],
             trig: [
                 { label: 'sin', value: 'sin(', type: 'function' },
                 { label: 'cos', value: 'cos(', type: 'function' },
                 { label: 'tan', value: 'tan(', type: 'function' },
+                { label: 'sec', value: 'sec(', type: 'function' },
+                { label: 'csc', value: 'csc(', type: 'function' },
+                { label: 'cot', value: 'cot(', type: 'function' },
                 { label: 'asin', value: 'asin(', type: 'function' },
                 { label: 'acos', value: 'acos(', type: 'function' },
                 { label: 'atan', value: 'atan(', type: 'function' }
@@ -88,7 +91,18 @@ class MathKeyboard {
                 { label: 'ln', value: 'ln(', type: 'function' },
                 { label: 'log', value: 'log(', type: 'function' },
                 { label: 'log10', value: 'log10(', type: 'function' },
+                { label: 'log2', value: 'log2(', type: 'function' },
                 { label: 'e^x', value: 'e^', type: 'function' }
+            ],
+            utility: [
+                { label: 'min', value: 'min(', type: 'function' },
+                { label: 'max', value: 'max(', type: 'function' },
+                { label: 'clamp', value: 'clamp(', type: 'function' },
+                { label: 'floor', value: 'floor(', type: 'function' },
+                { label: 'ceil', value: 'ceil(', type: 'function' },
+                { label: 'round', value: 'round(', type: 'function' },
+                { label: 'step', value: 'step(', type: 'function' },
+                { label: 'sigmoid', value: 'sigmoid(', type: 'function' }
             ],
             comparison: [
                 { label: '<', value: ' < ', type: 'operator' },
@@ -149,7 +163,8 @@ class MathKeyboard {
         ]));
 
         panels.appendChild(this.createPanel('advanced', [
-            this.createKeyGroup('Compare', 'comparison', 'grid-5')
+            this.createKeyGroup('Compare', 'comparison', 'grid-5'),
+            this.createKeyGroup('Utility', 'utility', 'grid-4')
         ]));
 
         this.container.appendChild(panels);
