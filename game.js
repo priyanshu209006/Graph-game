@@ -103,10 +103,9 @@ class Game {
     setupP5() {
         new p5((p5) => {
             p5.setup = () => {
-                // Get container dimensions for responsive sizing
+                // Use clientWidth/clientHeight — immune to CSS transform scaling
                 const container = document.getElementById('gameCanvas');
-                const rect = container.getBoundingClientRect();
-                const size = Math.min(rect.width, rect.height, 1040);
+                const size = Math.min(container.clientWidth, container.clientHeight, 1040);
                 this.canvasWidth = size;
                 this.canvasHeight = size;
 
@@ -122,8 +121,7 @@ class Game {
 
             p5.windowResized = () => {
                 const container = document.getElementById('gameCanvas');
-                const rect = container.getBoundingClientRect();
-                const size = Math.min(rect.width, rect.height, 1040);
+                const size = Math.min(container.clientWidth, container.clientHeight, 1040);
                 this.canvasWidth = size;
                 this.canvasHeight = size;
                 p5.resizeCanvas(this.canvasWidth, this.canvasHeight);

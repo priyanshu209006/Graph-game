@@ -16,8 +16,47 @@ class EquationParser {
             'asinh', 'acosh', 'atanh',
             'arcsin', 'arccos', 'arctan', 'arcsec', 'arccsc', 'arccot',
             'sqrt', 'cbrt', 'abs', 'log', 'ln', 'exp',
-            'floor', 'ceil', 'round', 'sign', 'mod'
+            'floor', 'ceil', 'round', 'sign', 'mod',
+            'min', 'max', 'clamp', 'root', 'nthroot', 'log10', 'log2',
+            'logBase', 'naturalLog', 'heaviside', 'step', 'sigmoid'
         ];
+    }
+
+    createScope(values = {}) {
+        return {
+            pi: Math.PI,
+            tau: Math.PI * 2,
+            phi: (1 + Math.sqrt(5)) / 2,
+            e: Math.E,
+            sec: (x) => 1 / Math.cos(x),
+            csc: (x) => 1 / Math.sin(x),
+            cot: (x) => 1 / Math.tan(x),
+            sech: (x) => 1 / Math.cosh(x),
+            csch: (x) => 1 / Math.sinh(x),
+            coth: (x) => 1 / Math.tanh(x),
+            asec: (x) => Math.acos(1 / x),
+            acsc: (x) => Math.asin(1 / x),
+            acot: (x) => Math.atan(1 / x),
+            log10: (x) => Math.log10(x),
+            log2: (x) => Math.log2(x),
+            logBase: (x, base) => Math.log(x) / Math.log(base),
+            naturalLog: (x) => Math.log(x),
+            root: (n, x) => this.nthRoot(n, x),
+            nthroot: (x, n) => this.nthRoot(n, x),
+            clamp: (x, min, max) => Math.min(Math.max(x, min), max),
+            heaviside: (x) => x < 0 ? 0 : (x > 0 ? 1 : 0.5),
+            step: (x) => x < 0 ? 0 : 1,
+            sigmoid: (x) => 1 / (1 + Math.exp(-x)),
+            ...values
+        };
+    }
+
+    nthRoot(n, x) {
+        if (n === 0) return NaN;
+        if (x < 0 && Math.abs(n % 2) === 1) {
+            return -Math.pow(Math.abs(x), 1 / n);
+        }
+        return Math.pow(x, 1 / n);
     }
 
     parseEquation(equationString) {
@@ -143,7 +182,7 @@ class EquationParser {
 
         // Test evaluation
         try {
-            const testResult = compiled.evaluate({ x: 0 });
+            const testResult = compiled.evaluate(this.createScope({ x: 0 }));
         } catch (e) {
             // Some functions may not work at x=0, that's ok
         }
@@ -152,11 +191,12 @@ class EquationParser {
             original: equationString,
             expression: cleanEquation,
             compiled: compiled,
+            parser: this,
             color: this.getNextColor(),
             type: 'explicit_y',
             evaluate: function (x) {
                 try {
-                    return this.compiled.evaluate({ x: x });
+                    return this.compiled.evaluate(this.parser.createScope({ x: x }));
                 } catch (error) {
                     return NaN;
                 }
@@ -182,7 +222,7 @@ class EquationParser {
             cleanEquation = cleanEquation.substring(cleanEquation.indexOf('=') + 1).trim();
         }
 
-        cleanEquation = this.preprocessEquation(cleanEquation.replace(/x/g, 'y')); // Replace x with y for evaluation
+        cleanEquation = this.preprocessEquation(cleanEquation.replace(/\bx\b/g, 'y')); // Replace standalone x with y for evaluation
 
         const expr = math.parse(cleanEquation);
         const compiled = expr.compile();
@@ -191,11 +231,12 @@ class EquationParser {
             original: equationString,
             expression: cleanEquation,
             compiled: compiled,
+            parser: this,
             color: this.getNextColor(),
             type: 'explicit_x',
             evaluate: function (y) {
                 try {
-                    return this.compiled.evaluate({ y: y });
+                    return this.compiled.evaluate(this.parser.createScope({ y: y }));
                 } catch (error) {
                     return NaN;
                 }
@@ -292,11 +333,12 @@ class EquationParser {
             original: equationString,
             expression: expression,
             compiled: compiled,
+            parser: this,
             color: this.getNextColor(),
             type: 'implicit',
             evaluate: function (x, y) {
                 try {
-                    return this.compiled.evaluate({ x: x, y: y });
+                    return this.compiled.evaluate(this.parser.createScope({ x: x, y: y }));
                 } catch (error) {
                     return NaN;
                 }
@@ -385,11 +427,12 @@ class EquationParser {
             original: equationString,
             expression: cleanEquation,
             compiled: compiled,
+            parser: this,
             color: this.getNextColor(),
             type: 'polar',
             evaluate: function (theta) {
                 try {
-                    return this.compiled.evaluate({ theta: theta });
+                    return this.compiled.evaluate(this.parser.createScope({ theta: theta }));
                 } catch (error) {
                     return NaN;
                 }
@@ -449,18 +492,19 @@ class EquationParser {
             yExpression: yPart,
             xCompiled: xCompiled,
             yCompiled: yCompiled,
+            parser: this,
             color: this.getNextColor(),
             type: 'parametric',
             evaluateX: function (t) {
                 try {
-                    return this.xCompiled.evaluate({ t: t });
+                    return this.xCompiled.evaluate(this.parser.createScope({ t: t }));
                 } catch (error) {
                     return NaN;
                 }
             },
             evaluateY: function (t) {
                 try {
-                    return this.yCompiled.evaluate({ t: t });
+                    return this.yCompiled.evaluate(this.parser.createScope({ t: t }));
                 } catch (error) {
                     return NaN;
                 }
@@ -517,11 +561,12 @@ class EquationParser {
             expression: expression,
             operator: operator,
             compiled: compiled,
+            parser: this,
             color: this.getNextColor() + '40', // Semi-transparent for regions
             type: 'inequality',
             evaluate: function (x, y) {
                 try {
-                    const diff = this.compiled.evaluate({ x: x, y: y });
+                    const diff = this.compiled.evaluate(this.parser.createScope({ x: x, y: y }));
                     switch (this.operator) {
                         case '>=': return diff >= 0;
                         case '<=': return diff <= 0;
@@ -580,12 +625,13 @@ class EquationParser {
                 expression: expression,
                 compiled: compiled,
                 conditions: conditions,
+                parser: this,
                 color: this.getNextColor(),
                 type: 'piecewise',
                 evaluate: function (x) {
                     if (this.checkConditions(x, this.conditions)) {
                         try {
-                            return this.compiled.evaluate({ x: x });
+                            return this.compiled.evaluate(this.parser.createScope({ x: x }));
                         } catch (error) {
                             return NaN;
                         }
@@ -763,6 +809,49 @@ class EquationParser {
         // Clean up any double multiplication signs
         equation = equation.replace(/\*\*/g, '^');
         equation = equation.replace(/\*\*/g, '*');
+
+        return equation;
+    }
+
+    preprocessAdvancedEquation(equation) {
+        const functionNames = this.mathFunctions
+            .concat(['logBase', 'naturalLog'])
+            .sort((a, b) => b.length - a.length);
+        const functionAlternates = functionNames.join('|');
+
+        equation = equation
+            .replace(/π/g, 'pi')
+            .replace(/θ/g, 'theta')
+            .replace(/√/g, 'sqrt')
+            .replace(/∞/g, 'Infinity')
+            .replace(/[−–—]/g, '-')
+            .replace(/[×·]/g, '*')
+            .replace(/÷/g, '/');
+
+        equation = this.preprocessEquation(equation);
+
+        equation = equation.replace(/\bceiling\b/gi, 'ceil');
+        equation = equation.replace(/\bsignum\b/gi, 'sign');
+        equation = equation.replace(/\bminimum\b/gi, 'min');
+        equation = equation.replace(/\bmaximum\b/gi, 'max');
+
+        equation = equation.replace(/(\d+(?:\.\d+)?)\s*(?:deg|°)\b/gi, '($1*pi/180)');
+
+        equation = equation.replace(/\bln\s*\(/gi, 'naturalLog(');
+        equation = equation.replace(/\blog_([a-zA-Z0-9.]+)\s*\(([^()]*)\)/gi, 'logBase($2,$1)');
+        equation = equation.replace(/\blog\s*\(([^,()]+)\s*,\s*([^()]*)\)/gi, 'logBase($2,$1)');
+        equation = equation.replace(/\blog\s*\(/gi, 'log10(');
+
+        equation = equation.replace(new RegExp(`\\b(${functionAlternates})([a-zA-Z])`, 'gi'), '$1($2)');
+        equation = equation.replace(new RegExp(`\\b(${functionAlternates})(\\d)`, 'gi'), '$1($2)');
+
+        equation = equation.replace(/([a-zA-Z])(\()/g, (match, letter, paren, offset, str) => {
+            const before = str.substring(0, offset + 1).toLowerCase();
+            for (const fn of functionNames) {
+                if (before.endsWith(fn.toLowerCase())) return match;
+            }
+            return letter + '*' + paren;
+        });
 
         return equation;
     }

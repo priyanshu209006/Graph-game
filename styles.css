@@ -1,7 +1,6 @@
 /* Marbleslides game UI */
 
 :root {
-    --desktop-ui-scale: 1;
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
     --primary-soft: #dbeafe;
@@ -63,17 +62,19 @@ body.game-page {
     overflow: hidden;
 }
 
-/* Scale down to 80% on desktop — the UI was designed / tested at 80% browser zoom */
+body.game-page .seo-footer {
+    display: none;
+}
+
+/* The UI was designed at 80% browser zoom — replicate that with CSS zoom */
 @media (min-width: 901px) {
-    :root {
-        --desktop-ui-scale: 0.8;
+    html {
+        zoom: 0.8;
     }
 
-    .app-shell {
-        width: calc(100vw / var(--desktop-ui-scale));
-        height: calc(100vh / var(--desktop-ui-scale));
-        transform: scale(var(--desktop-ui-scale));
-        transform-origin: top left;
+    body.game-page,
+    body.game-page .app-shell {
+        height: calc(100vh / 0.8);
     }
 }
 
@@ -191,7 +192,7 @@ a {
 .game-layout {
     min-height: 0;
     display: grid;
-    grid-template-columns: clamp(274px, 19.1vw, 314px) minmax(620px, 1fr) clamp(134px, 9vw, 165px);
+    grid-template-columns: clamp(270px, 19vw, 310px) minmax(620px, 1fr) clamp(134px, 9vw, 165px);
     gap: 6px;
 }
 
@@ -1118,7 +1119,7 @@ a {
 
 @media (max-width: 1180px) {
     .game-layout {
-        grid-template-columns: 264px minmax(500px, 1fr) 142px;
+        grid-template-columns: 260px minmax(500px, 1fr) 142px;
     }
 
     .hud-chip span {
