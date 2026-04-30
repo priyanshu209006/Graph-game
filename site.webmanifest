@@ -1,0 +1,17 @@
+{
+  "name": "Marbleslides Graph Game",
+  "short_name": "Marbleslides",
+  "description": "An equation plotting and graphing calculator game for algebra, functions, and coordinate geometry practice.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -10,20 +10,22 @@
   # publish = "dist"
 
 # SPA fallback - serve index.html only for non-existent paths
-# force = false means real files (like ads.txt) are served directly
+# force = false means real files (like ads.txt, robots.txt, sitemap.xml) are served directly
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
   force = false
 
-# Headers for better performance
+# Security headers
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
 
+# Cache static assets aggressively
 [[headers]]
   for = "*.js"
   [headers.values]
@@ -33,3 +35,28 @@
   for = "*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML pages should revalidate
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Sitemap and robots should be fresh
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml; charset=utf-8"
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=86400"
+

@@ -1,7 +1,11 @@
 class EquationParser {
     constructor() {
         this.parser = math.parser();
-        this.colors = ['#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'];
+        this.colors = [
+            '#ef4444', '#10b981', '#3b82f6', '#8b5cf6',
+            '#f59e0b', '#ec4899', '#06b6d4', '#84cc16',
+            '#f97316', '#14b8a6', '#6366f1', '#a855f7'
+        ];
         this.colorIndex = 0;
 
         // List of math functions to preserve during preprocessing

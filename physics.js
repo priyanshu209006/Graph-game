@@ -149,11 +149,29 @@ class PhysicsEngine {
         /** Air drag coefficient (resistance in free fall) */
         this.airDrag = config.airDrag ?? 0.01;
 
-        /** Path snap distance threshold */
-        this.snapDistance = config.snapDistance ?? 0.5;
+        /** Attach distance threshold for latching onto a path */
+        this.attachDistance = config.attachDistance ?? 0.45;
 
-        /** Snap strength (0-1, how quickly marble snaps to path) */
-        this.snapStrength = config.snapStrength ?? 0.4;
+        /** Retain distance threshold while already on a path (hysteresis) */
+        this.retainDistance = config.retainDistance ?? 0.7;
+
+        /** Position correction strength while constrained to a path */
+        this.snapStrength = config.snapStrength ?? 0.3;
+
+        /** Damp velocity perpendicular to the path */
+        this.normalDamping = config.normalDamping ?? 0.85;
+
+        /** Bias toward staying on the current path through intersections */
+        this.pathStickiness = config.pathStickiness ?? 0.18;
+
+        /** Minimum improvement needed before switching to a different path */
+        this.pathSwitchBias = config.pathSwitchBias ?? 0.12;
+
+        /** Low-speed threshold where static friction can hold position */
+        this.tangentStickThreshold = config.tangentStickThreshold ?? 0.04;
+
+        /** Speed threshold for trusting current velocity to orient tangent */
+        this.tangentFlipThreshold = config.tangentFlipThreshold ?? 0.05;
 
         /** Minimum velocity to stay on path (detach if slope too steep) */
         this.detachThreshold = config.detachThreshold ?? 0.3;
@@ -204,12 +222,13 @@ class PhysicsEngine {
         // -------------------------------------------------------------------
         // STEP 1: Find nearest path and determine if marble should be on it
         // -------------------------------------------------------------------
-        const pathInfo = this.findNearestPath(marble, equations);
+        const pathInfo = this.findBestPath(marble, equations);
 
         // -------------------------------------------------------------------
         // STEP 2: Determine path state (on path, transitioning, or free fall)
         // -------------------------------------------------------------------
-        if (pathInfo && pathInfo.distance < this.snapDistance) {
+        const pathThreshold = wasOnPath ? this.retainDistance : this.attachDistance;
+        if (pathInfo && pathInfo.distance < pathThreshold) {
             // Close enough to a path
             const shouldAttach = this.shouldAttachToPath(marble, pathInfo);
 
@@ -219,6 +238,8 @@ class PhysicsEngine {
                 }
                 marble.onPath = true;
                 marble.currentEquation = pathInfo.equation;
+                marble.pathParameter = pathInfo.parameter ?? null;
+                marble.pathParameterType = pathInfo.parameterType ?? null;
 
                 // Apply path-following physics
                 this.updateOnPath(marble, pathInfo, scaledDt);
@@ -227,11 +248,15 @@ class PhysicsEngine {
                 if (this.shouldDetachFromPath(marble, pathInfo)) {
                     marble.onPath = false;
                     marble.currentEquation = null;
+                    marble.pathParameter = null;
+                    marble.pathParameterType = null;
                     result.detached = true;
                 }
             } else {
                 marble.onPath = false;
                 marble.currentEquation = null;
+                marble.pathParameter = null;
+                marble.pathParameterType = null;
                 this.updateInAir(marble, scaledDt);
             }
         } else {
@@ -241,6 +266,8 @@ class PhysicsEngine {
             }
             marble.onPath = false;
             marble.currentEquation = null;
+            marble.pathParameter = null;
+            marble.pathParameterType = null;
             this.updateInAir(marble, scaledDt);
         }
 
@@ -293,13 +320,18 @@ class PhysicsEngine {
         // Snap marble to path (smooth interpolation)
         // -------------------------------------------------------------------
         const targetPosition = new Vector2D(closestPoint.x, closestPoint.y);
-        marble.position = marble.position.lerp(targetPosition, this.snapStrength);
+        const toPath = targetPosition.sub(marble.position);
+        marble.position = marble.position.add(toPath.mul(this.snapStrength));
 
         // -------------------------------------------------------------------
         // Project velocity onto tangent direction
         // -------------------------------------------------------------------
-        const tangentUnit = tangent.normalize();
+        const tangentUnit = this.choosePreferredTangent(marble, tangent.normalize());
         const normalUnit = normal.normalize();
+
+        // Remove unstable perpendicular motion before integrating along the rail
+        const normalSpeed = marble.velocity.dot(normalUnit);
+        marble.velocity = marble.velocity.sub(normalUnit.mul(normalSpeed * this.normalDamping));
 
         // Get velocity component along tangent
         let tangentSpeed = marble.velocity.dot(tangentUnit);
@@ -318,41 +350,35 @@ class PhysicsEngine {
         // -------------------------------------------------------------------
         // Apply rolling friction (opposes motion)
         // -------------------------------------------------------------------
-        const frictionForce = -Math.sign(tangentSpeed) * this.rollingFriction * Math.abs(this.gravity);
+        const frictionAccel = this.rollingFriction * Math.abs(this.gravity);
+        const slopeDirection = Math.sign(gravityAlongTangent) || 1;
+        const frictionForce = -Math.sign(tangentSpeed || slopeDirection) * frictionAccel;
 
-        // Only apply friction if it won't reverse the direction
-        if (Math.abs(frictionForce * dt) < Math.abs(tangentSpeed)) {
+        // Static friction helps the marble settle instead of jittering on nearly-flat sections
+        if (Math.abs(tangentSpeed) < this.tangentStickThreshold && Math.abs(gravityAlongTangent) <= frictionAccel) {
+            tangentSpeed = 0;
+        } else if (Math.abs(frictionForce * dt) < Math.abs(tangentSpeed)) {
             tangentSpeed += frictionForce * dt;
         } else {
-            tangentSpeed *= 0.9; // Dampen instead of reversing
-        }
-
-        // -------------------------------------------------------------------
-        // Ensure movement direction (prefer positive x direction for natural flow)
-        // -------------------------------------------------------------------
-        // If tangent points in negative x direction, reverse it
-        // This ensures marble generally moves "right" along curves
-        let effectiveTangent = tangentUnit;
-        if (tangentUnit.x < 0 && Math.abs(tangentSpeed) < 0.1) {
-            // At low speeds, prefer positive x direction
-            effectiveTangent = tangentUnit.mul(-1);
-            tangentSpeed = Math.abs(tangentSpeed);
+            tangentSpeed = 0;
         }
 
         // -------------------------------------------------------------------
         // Set new velocity along tangent
         // -------------------------------------------------------------------
-        marble.velocity = effectiveTangent.mul(tangentSpeed);
+        marble.velocity = tangentUnit.mul(tangentSpeed);
+        marble.currentEquation = equation;
+        marble.pathParameter = pathInfo.parameter ?? marble.pathParameter ?? null;
+        marble.pathParameterType = pathInfo.parameterType ?? marble.pathParameterType ?? null;
+    }
 
-        // -------------------------------------------------------------------
-        // Apply small normal force to keep marble on path
-        // (prevents drifting due to numerical errors)
-        // -------------------------------------------------------------------
-        const distanceFromPath = marble.position.distanceTo(targetPosition);
-        if (distanceFromPath > 0.01) {
-            const correctionForce = normalUnit.mul(-distanceFromPath * 0.5);
-            marble.velocity = marble.velocity.add(correctionForce);
+    choosePreferredTangent(marble, tangentUnit) {
+        if (marble.velocity.magnitude() > this.tangentFlipThreshold) {
+            return marble.velocity.dot(tangentUnit) >= 0 ? tangentUnit : tangentUnit.mul(-1);
         }
+
+        const gravityVector = new Vector2D(0, this.gravity);
+        return gravityVector.dot(tangentUnit) >= 0 ? tangentUnit : tangentUnit.mul(-1);
     }
 
     /**
@@ -451,22 +477,39 @@ class PhysicsEngine {
      * Find the nearest path to the marble among all equations
      * @returns {Object|null} Path info with closest point, tangent, normal, distance
      */
-    findNearestPath(marble, equations) {
-        let nearestInfo = null;
-        let minDistance = Infinity;
+    findBestPath(marble, equations) {
+        let bestInfo = null;
+        let bestScore = Infinity;
+        const speed = marble.velocity.magnitude();
 
         for (const equation of equations) {
             // Skip non-solid curve types (inequalities are regions, not paths)
             if (equation.type === 'inequality') continue;
 
             const info = this.analyzePathAtPoint(marble, equation);
-            if (info && info.distance < minDistance) {
-                minDistance = info.distance;
-                nearestInfo = info;
+            if (!info) continue;
+
+            let score = info.distance;
+
+            if (marble.currentEquation === equation) {
+                score -= this.pathStickiness;
+            } else if (marble.currentEquation) {
+                score += this.pathSwitchBias;
+            }
+
+            if (speed > this.minVelocity) {
+                const velocityDir = marble.velocity.normalize();
+                const tangentAlignment = Math.abs(velocityDir.dot(info.tangent.normalize()));
+                score += (1 - tangentAlignment) * 0.08;
+            }
+
+            if (score < bestScore) {
+                bestScore = score;
+                bestInfo = info;
             }
         }
 
-        return nearestInfo;
+        return bestInfo;
     }
 
     /**
@@ -475,25 +518,27 @@ class PhysicsEngine {
      */
     analyzePathAtPoint(marble, equation) {
         const marblePos = marble.position;
+        const sameEquation = marble.currentEquation === equation;
+        const hintParameter = sameEquation ? marble.pathParameter : null;
 
         switch (equation.type) {
             case 'explicit_y':
             case 'piecewise':
             case 'constant_y':
-                return this.analyzeExplicitY(marblePos, equation);
+                return this.analyzeExplicitY(marblePos, equation, hintParameter);
 
             case 'explicit_x':
             case 'constant_x':
-                return this.analyzeExplicitX(marblePos, equation);
+                return this.analyzeExplicitX(marblePos, equation, hintParameter);
 
             case 'implicit':
                 return this.analyzeImplicit(marblePos, equation);
 
             case 'polar':
-                return this.analyzePolar(marblePos, equation);
+                return this.analyzePolar(marblePos, equation, hintParameter);
 
             case 'parametric':
-                return this.analyzeParametric(marblePos, equation);
+                return this.analyzeParametric(marblePos, equation, hintParameter);
 
             default:
                 return null;
@@ -503,9 +548,11 @@ class PhysicsEngine {
     /**
      * Analyze y = f(x) curve
      */
-    analyzeExplicitY(pos, equation) {
+    analyzeExplicitY(pos, equation, hintX = null) {
         // Find closest x using golden section search
-        const closestX = this.findClosestXOnCurve(pos, equation, pos.x - 3, pos.x + 3);
+        const searchRadius = Number.isFinite(hintX) ? 1.75 : 3;
+        const centerX = Number.isFinite(hintX) ? hintX : pos.x;
+        const closestX = this.findClosestXOnCurve(pos, equation, centerX - searchRadius, centerX + searchRadius);
 
         if (closestX === null) return null;
 
@@ -535,7 +582,9 @@ class PhysicsEngine {
                 distance,
                 tangent,
                 normal,
-                curvature
+                curvature,
+                parameter: closestX,
+                parameterType: 'x'
             };
         } catch (e) {
             return null;
@@ -545,9 +594,11 @@ class PhysicsEngine {
     /**
      * Analyze x = f(y) curve
      */
-    analyzeExplicitX(pos, equation) {
+    analyzeExplicitX(pos, equation, hintY = null) {
         // Find closest y
-        const closestY = this.findClosestYOnCurve(pos, equation, pos.y - 3, pos.y + 3);
+        const searchRadius = Number.isFinite(hintY) ? 1.75 : 3;
+        const centerY = Number.isFinite(hintY) ? hintY : pos.y;
+        const closestY = this.findClosestYOnCurve(pos, equation, centerY - searchRadius, centerY + searchRadius);
 
         if (closestY === null) return null;
 
@@ -575,7 +626,9 @@ class PhysicsEngine {
                 distance,
                 tangent,
                 normal,
-                curvature
+                curvature,
+                parameter: closestY,
+                parameterType: 'y'
             };
         } catch (e) {
             return null;
@@ -616,17 +669,19 @@ class PhysicsEngine {
     /**
      * Analyze polar curve r = f(θ)
      */
-    analyzePolar(pos, equation) {
+    analyzePolar(pos, equation, hintTheta = null) {
         // Convert marble position to polar
         const marbleTheta = Math.atan2(pos.y, pos.x);
         const marbleR = pos.magnitude();
 
         // Find closest theta
-        let closestTheta = marbleTheta;
+        let closestTheta = Number.isFinite(hintTheta) ? hintTheta : marbleTheta;
         let minDistance = Infinity;
 
-        // Search around marble's theta
-        for (let theta = marbleTheta - Math.PI; theta <= marbleTheta + Math.PI; theta += 0.05) {
+        const thetaWindow = Number.isFinite(hintTheta) ? Math.PI / 2 : Math.PI;
+
+        // Search around marble's theta or prior attachment angle
+        for (let theta = closestTheta - thetaWindow; theta <= closestTheta + thetaWindow; theta += 0.05) {
             try {
                 const r = equation.evaluate(theta);
                 if (!isFinite(r)) continue;
@@ -669,7 +724,9 @@ class PhysicsEngine {
                 distance: minDistance,
                 tangent,
                 normal,
-                curvature: 0 // Simplified
+                curvature: 0, // Simplified
+                parameter: closestTheta,
+                parameterType: 'theta'
             };
         } catch (e) {
             return null;
@@ -679,12 +736,15 @@ class PhysicsEngine {
     /**
      * Analyze parametric curve x=f(t), y=g(t)
      */
-    analyzeParametric(pos, equation) {
+    analyzeParametric(pos, equation, hintT = null) {
         // Find closest t parameter
-        let closestT = 0;
+        let closestT = Number.isFinite(hintT) ? hintT : 0;
         let minDistance = Infinity;
 
-        for (let t = 0; t <= 2 * Math.PI; t += 0.05) {
+        const tMin = Number.isFinite(hintT) ? hintT - Math.PI : 0;
+        const tMax = Number.isFinite(hintT) ? hintT + Math.PI : 2 * Math.PI;
+
+        for (let t = tMin; t <= tMax; t += 0.05) {
             try {
                 const x = equation.evaluateX(t);
                 const y = equation.evaluateY(t);
@@ -718,7 +778,9 @@ class PhysicsEngine {
                 distance: minDistance,
                 tangent,
                 normal,
-                curvature: 0
+                curvature: 0,
+                parameter: closestT,
+                parameterType: 't'
             };
         } catch (e) {
             return null;
@@ -1025,6 +1087,12 @@ class Marble {
         /** Reference to current equation being followed */
         this.currentEquation = null;
 
+        /** Scalar parameter used to continue smoothly on the same path */
+        this.pathParameter = null;
+
+        /** Parameter type (x, y, theta, t) for the current path */
+        this.pathParameterType = null;
+
         /** Trail of previous positions for visual effect */
         this.trail = [];
 
@@ -1057,6 +1125,8 @@ class Marble {
         this.velocity = new Vector2D(0.1, 0);
         this.onPath = false;
         this.currentEquation = null;
+        this.pathParameter = null;
+        this.pathParameterType = null;
         this.trail = [];
         this.active = true;
     }

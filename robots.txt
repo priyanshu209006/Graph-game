@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /.flowbaby/
+
+Sitemap: https://marbleslides.netlify.app/sitemap.xml

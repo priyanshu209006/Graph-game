@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * DESMOS-STYLE MATH KEYBOARD - FIXED VERSION
+ * DESMOS-STYLE MATH KEYBOARD
  * ============================================================================
  */
 
@@ -9,11 +9,9 @@ class MathKeyboard {
         this.input = inputElement;
         this.options = {
             showPreview: options.showPreview ?? true,
-            autoInsertParens: options.autoInsertParens ?? true,
             ...options
         };
 
-        this.activePopup = null;
         this.container = null;
         this.previewElement = null;
         this.keyDefinitions = this.getKeyDefinitions();
@@ -25,19 +23,24 @@ class MathKeyboard {
 
     getKeyDefinitions() {
         return {
+            equations: [
+                { label: 'y =', value: 'y = ', type: 'template' },
+                { label: 'x =', value: 'x = ', type: 'template' },
+                { label: 'r =', value: 'r = ', type: 'template' }
+            ],
             numbers: [
                 { label: '7', value: '7', type: 'number' },
                 { label: '8', value: '8', type: 'number' },
                 { label: '9', value: '9', type: 'number' },
-                { label: '÷', value: '/', type: 'operator' },
+                { label: '/', value: '/', type: 'operator' },
                 { label: '4', value: '4', type: 'number' },
                 { label: '5', value: '5', type: 'number' },
                 { label: '6', value: '6', type: 'number' },
-                { label: '×', value: '*', type: 'operator' },
+                { label: '*', value: '*', type: 'operator' },
                 { label: '1', value: '1', type: 'number' },
                 { label: '2', value: '2', type: 'number' },
                 { label: '3', value: '3', type: 'number' },
-                { label: '−', value: '-', type: 'operator' },
+                { label: '-', value: '-', type: 'operator' },
                 { label: '0', value: '0', type: 'number' },
                 { label: '.', value: '.', type: 'number' },
                 { label: '=', value: ' = ', type: 'operator' },
@@ -46,12 +49,12 @@ class MathKeyboard {
             variables: [
                 { label: 'x', value: 'x', type: 'variable' },
                 { label: 'y', value: 'y', type: 'variable' },
-                { label: 'r', value: 'r', type: 'variable' },
-                { label: 'θ', value: 'theta', type: 'variable' },
+                { label: 'theta', value: 'theta', type: 'variable' },
                 { label: 't', value: 't', type: 'variable' },
-                { label: 'n', value: 'n', type: 'variable' },
                 { label: 'a', value: 'a', type: 'variable' },
-                { label: 'b', value: 'b', type: 'variable' }
+                { label: 'b', value: 'b', type: 'variable' },
+                { label: 'pi', value: 'pi', type: 'constant' },
+                { label: 'e', value: 'e', type: 'constant' }
             ],
             grouping: [
                 { label: '(', value: '(', type: 'grouping' },
@@ -64,57 +67,35 @@ class MathKeyboard {
                 { label: ',', value: ', ', type: 'grouping' }
             ],
             powers: [
-                { label: 'x²', value: '^2', type: 'power' },
-                { label: 'x³', value: '^3', type: 'power' },
-                { label: 'xⁿ', value: '^', type: 'power' },
-                { label: '√', value: 'sqrt(', type: 'function' },
-                { label: 'ⁿ√', value: 'nthroot(', type: 'function' },
+                { label: 'x^2', value: '^2', type: 'power' },
+                { label: 'x^3', value: '^3', type: 'power' },
+                { label: 'x^n', value: '^', type: 'power' },
+                { label: 'sqrt', value: 'sqrt(', type: 'function' },
                 { label: '1/x', value: '1/', type: 'fraction' },
-                { label: 'π', value: 'pi', type: 'constant' },
-                { label: 'e', value: 'e', type: 'constant' }
+                { label: 'abs', value: 'abs(', type: 'function' },
+                { label: 'floor', value: 'floor(', type: 'function' },
+                { label: 'ceil', value: 'ceil(', type: 'function' }
             ],
             trig: [
                 { label: 'sin', value: 'sin(', type: 'function' },
                 { label: 'cos', value: 'cos(', type: 'function' },
                 { label: 'tan', value: 'tan(', type: 'function' },
-                { label: 'sec', value: 'sec(', type: 'function' },
-                { label: 'csc', value: 'csc(', type: 'function' },
-                { label: 'cot', value: 'cot(', type: 'function' }
-            ],
-            invTrig: [
-                { label: 'sin⁻¹', value: 'arcsin(', type: 'function' },
-                { label: 'cos⁻¹', value: 'arccos(', type: 'function' },
-                { label: 'tan⁻¹', value: 'arctan(', type: 'function' }
-            ],
-            hyperbolic: [
-                { label: 'sinh', value: 'sinh(', type: 'function' },
-                { label: 'cosh', value: 'cosh(', type: 'function' },
-                { label: 'tanh', value: 'tanh(', type: 'function' }
+                { label: 'asin', value: 'asin(', type: 'function' },
+                { label: 'acos', value: 'acos(', type: 'function' },
+                { label: 'atan', value: 'atan(', type: 'function' }
             ],
             logExp: [
                 { label: 'ln', value: 'ln(', type: 'function' },
                 { label: 'log', value: 'log(', type: 'function' },
-                { label: 'log₁₀', value: 'log10(', type: 'function' },
-                { label: 'eˣ', value: 'e^', type: 'function' }
-            ],
-            special: [
-                { label: '|x|', value: 'abs(', type: 'function' },
-                { label: '⌊x⌋', value: 'floor(', type: 'function' },
-                { label: '⌈x⌉', value: 'ceil(', type: 'function' },
-                { label: 'sign', value: 'sign(', type: 'function' },
-                { label: 'mod', value: '%', type: 'operator' }
+                { label: 'log10', value: 'log10(', type: 'function' },
+                { label: 'e^x', value: 'e^', type: 'function' }
             ],
             comparison: [
                 { label: '<', value: ' < ', type: 'operator' },
                 { label: '>', value: ' > ', type: 'operator' },
-                { label: '≤', value: ' <= ', type: 'operator' },
-                { label: '≥', value: ' >= ', type: 'operator' },
-                { label: '≠', value: ' != ', type: 'operator' }
-            ],
-            equations: [
-                { label: 'y =', value: 'y = ', type: 'template' },
-                { label: 'x =', value: 'x = ', type: 'template' },
-                { label: 'r =', value: 'r = ', type: 'template' }
+                { label: '<=', value: ' <= ', type: 'operator' },
+                { label: '>=', value: ' >= ', type: 'operator' },
+                { label: '!=', value: ' != ', type: 'operator' }
             ]
         };
     }
@@ -123,107 +104,89 @@ class MathKeyboard {
         this.container = document.createElement('div');
         this.container.className = 'math-keyboard';
 
-        // Preview
         if (this.options.showPreview) {
             this.previewElement = document.createElement('div');
             this.previewElement.className = 'math-preview';
-            this.previewElement.innerHTML = '<span class="preview-placeholder">Preview will appear here</span>';
+            this.previewElement.innerHTML = '<span class="preview-placeholder">Equation preview</span>';
             this.container.appendChild(this.previewElement);
         }
 
-        // Tabs
         const tabBar = document.createElement('div');
         tabBar.className = 'keyboard-tabs';
 
-        const tabs = [
-            { id: 'basic', label: '123', icon: '🔢' },
-            { id: 'functions', label: 'f(x)', icon: '𝑓' },
-            { id: 'advanced', label: 'More', icon: '∞' }
-        ];
-
-        tabs.forEach((tab, index) => {
+        [
+            { id: 'basic', label: '123' },
+            { id: 'functions', label: 'f(x)' },
+            { id: 'advanced', label: 'More' }
+        ].forEach((tab, index) => {
             const tabBtn = document.createElement('button');
             tabBtn.className = 'keyboard-tab' + (index === 0 ? ' active' : '');
             tabBtn.dataset.panel = tab.id;
             tabBtn.type = 'button';
-            tabBtn.innerHTML = `<span class="tab-icon">${tab.icon}</span><span class="tab-label">${tab.label}</span>`;
-            tabBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.switchPanel(tab.id);
-            });
+            tabBtn.textContent = tab.label;
+            tabBtn.addEventListener('click', () => this.switchPanel(tab.id));
             tabBar.appendChild(tabBtn);
         });
 
         this.container.appendChild(tabBar);
 
-        // Panels
-        const panelsDiv = document.createElement('div');
-        panelsDiv.className = 'keyboard-panel-container';
+        const panels = document.createElement('div');
+        panels.className = 'keyboard-panel-container';
 
-        // Basic
         const basicPanel = this.createPanel('basic', [
-            this.createKeyGroup('Quick', 'equations'),
+            this.createKeyGroup('Quick', 'equations', 'grid-3'),
             this.createKeyGroup('Numbers', 'numbers', 'grid-4'),
             this.createKeyGroup('Variables', 'variables', 'grid-4'),
             this.createKeyGroup('Brackets', 'grouping', 'grid-4')
         ]);
         basicPanel.classList.add('active');
-        panelsDiv.appendChild(basicPanel);
+        panels.appendChild(basicPanel);
 
-        // Functions
-        const functionsPanel = this.createPanel('functions', [
-            this.createKeyGroup('Powers & Roots', 'powers', 'grid-4'),
+        panels.appendChild(this.createPanel('functions', [
+            this.createKeyGroup('Powers and roots', 'powers', 'grid-4'),
             this.createKeyGroup('Trigonometry', 'trig', 'grid-3'),
-            this.createKeyGroup('Inverse Trig', 'invTrig', 'grid-3'),
-            this.createKeyGroup('Log & Exp', 'logExp', 'grid-4')
-        ]);
-        panelsDiv.appendChild(functionsPanel);
+            this.createKeyGroup('Log and exp', 'logExp', 'grid-4')
+        ]));
 
-        // Advanced
-        const advancedPanel = this.createPanel('advanced', [
-            this.createKeyGroup('Special', 'special', 'grid-5'),
-            this.createKeyGroup('Hyperbolic', 'hyperbolic', 'grid-3'),
+        panels.appendChild(this.createPanel('advanced', [
             this.createKeyGroup('Compare', 'comparison', 'grid-5')
-        ]);
-        panelsDiv.appendChild(advancedPanel);
+        ]));
 
-        this.container.appendChild(panelsDiv);
+        this.container.appendChild(panels);
 
-        // Actions
         const actionBar = document.createElement('div');
         actionBar.className = 'keyboard-actions';
 
-        const actions = [
-            { label: '←', action: 'left', className: 'action-nav' },
-            { label: '→', action: 'right', className: 'action-nav' },
-            { label: '⌫', action: 'backspace', className: 'action-delete' },
+        [
+            { label: '<', action: 'left', className: 'action-nav' },
+            { label: '>', action: 'right', className: 'action-nav' },
+            { label: 'Backspace', action: 'backspace', className: 'action-delete' },
             { label: 'Clear', action: 'clear', className: 'action-clear' },
-            { label: '✓ Add', action: 'submit', className: 'action-submit' }
-        ];
-
-        actions.forEach(action => {
+            { label: 'Plot', action: 'submit', className: 'action-submit' }
+        ].forEach((action) => {
             const btn = document.createElement('button');
             btn.className = 'keyboard-action ' + action.className;
             btn.textContent = action.label;
             btn.type = 'button';
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.handleAction(action.action);
-            });
+            btn.addEventListener('click', () => this.handleAction(action.action));
             actionBar.appendChild(btn);
         });
 
         this.container.appendChild(actionBar);
 
-        // Insert after input
-        this.input.parentNode.insertBefore(this.container, this.input.nextSibling);
+        const mount = document.getElementById('mathKeyboardMount');
+        if (mount) {
+            mount.appendChild(this.container);
+        } else {
+            this.input.parentNode.insertBefore(this.container, this.input.nextSibling);
+        }
     }
 
     createPanel(id, groups) {
         const panel = document.createElement('div');
         panel.className = 'keyboard-panel';
         panel.dataset.panel = id;
-        groups.forEach(g => g && panel.appendChild(g));
+        groups.forEach((group) => panel.appendChild(group));
         return panel;
     }
 
@@ -231,92 +194,76 @@ class MathKeyboard {
         const group = document.createElement('div');
         group.className = 'key-group';
 
-        if (title) {
-            const titleEl = document.createElement('div');
-            titleEl.className = 'key-group-title';
-            titleEl.textContent = title;
-            group.appendChild(titleEl);
-        }
+        const titleEl = document.createElement('div');
+        titleEl.className = 'key-group-title';
+        titleEl.textContent = title;
+        group.appendChild(titleEl);
 
         const container = document.createElement('div');
         container.className = 'keys-container ' + gridClass;
 
-        const keys = this.keyDefinitions[category];
-        if (keys) {
-            keys.forEach(keyDef => {
-                const btn = document.createElement('button');
-                btn.className = 'keyboard-key key-' + keyDef.type;
-                btn.textContent = keyDef.label;
-                btn.type = 'button';
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.insert(keyDef.value);
-                });
-                container.appendChild(btn);
-            });
-        }
+        this.keyDefinitions[category].forEach((keyDef) => {
+            const btn = document.createElement('button');
+            btn.className = 'keyboard-key key-' + keyDef.type;
+            btn.textContent = keyDef.label;
+            btn.type = 'button';
+            btn.addEventListener('click', () => this.insert(keyDef.value));
+            container.appendChild(btn);
+        });
 
         group.appendChild(container);
         return group;
     }
 
     switchPanel(panelId) {
-        this.container.querySelectorAll('.keyboard-tab').forEach(tab => {
+        this.container.querySelectorAll('.keyboard-tab').forEach((tab) => {
             tab.classList.toggle('active', tab.dataset.panel === panelId);
         });
-        this.container.querySelectorAll('.keyboard-panel').forEach(panel => {
+        this.container.querySelectorAll('.keyboard-panel').forEach((panel) => {
             panel.classList.toggle('active', panel.dataset.panel === panelId);
         });
     }
 
     insert(value) {
-        const pos = this.input.selectionStart || this.input.value.length;
+        const pos = this.input.selectionStart ?? this.input.value.length;
         const before = this.input.value.slice(0, pos);
         const after = this.input.value.slice(pos);
-
         this.input.value = before + value + after;
 
         const newPos = pos + value.length;
         this.input.focus();
         this.input.setSelectionRange(newPos, newPos);
-
         this.updatePreview();
     }
 
     handleAction(action) {
-        const pos = this.input.selectionStart || 0;
-        const val = this.input.value;
+        const pos = this.input.selectionStart ?? 0;
+        const value = this.input.value;
 
-        switch (action) {
-            case 'backspace':
-                if (pos > 0) {
-                    // Smart delete
-                    const count = this.getDeleteCount(val, pos);
-                    this.input.value = val.slice(0, pos - count) + val.slice(pos);
-                    this.input.focus();
-                    this.input.setSelectionRange(pos - count, pos - count);
-                }
-                break;
-            case 'clear':
-                this.input.value = '';
-                this.input.focus();
-                break;
-            case 'left':
-                if (pos > 0) {
-                    this.input.focus();
-                    this.input.setSelectionRange(pos - 1, pos - 1);
-                }
-                break;
-            case 'right':
-                if (pos < val.length) {
-                    this.input.focus();
-                    this.input.setSelectionRange(pos + 1, pos + 1);
-                }
-                break;
-            case 'submit':
-                const addBtn = document.getElementById('addEquationBtn');
-                if (addBtn) addBtn.click();
-                break;
+        if (action === 'backspace' && pos > 0) {
+            const count = this.getDeleteCount(value, pos);
+            this.input.value = value.slice(0, pos - count) + value.slice(pos);
+            this.input.focus();
+            this.input.setSelectionRange(pos - count, pos - count);
+        }
+
+        if (action === 'clear') {
+            this.input.value = '';
+            this.input.focus();
+        }
+
+        if (action === 'left' && pos > 0) {
+            this.input.focus();
+            this.input.setSelectionRange(pos - 1, pos - 1);
+        }
+
+        if (action === 'right' && pos < value.length) {
+            this.input.focus();
+            this.input.setSelectionRange(pos + 1, pos + 1);
+        }
+
+        if (action === 'submit') {
+            document.getElementById('addEquationBtn')?.click();
         }
 
         this.updatePreview();
@@ -325,86 +272,55 @@ class MathKeyboard {
     getDeleteCount(value, pos) {
         const before = value.slice(0, pos);
         const patterns = [
-            /sin\($/, /cos\($/, /tan\($/, /sec\($/, /csc\($/, /cot\($/,
-            /sinh\($/, /cosh\($/, /tanh\($/,
-            /arcsin\($/, /arccos\($/, /arctan\($/,
+            /sin\($/, /cos\($/, /tan\($/, /asin\($/, /acos\($/, /atan\($/,
             /sqrt\($/, /abs\($/, /ln\($/, /log\($/, /log10\($/,
-            /floor\($/, /ceil\($/, /sign\($/,
-            /nthroot\($/,
-            /theta$/, /pi$/,
+            /floor\($/, /ceil\($/, /theta$/, /pi$/,
             / = $/, / < $/, / > $/, / <= $/, / >= $/, / != $/
         ];
 
-        for (const p of patterns) {
-            const m = before.match(p);
-            if (m) return m[0].length;
+        for (const pattern of patterns) {
+            const match = before.match(pattern);
+            if (match) return match[0].length;
         }
+
         return 1;
     }
 
     updatePreview() {
         if (!this.previewElement) return;
 
-        const val = this.input.value.trim();
-        if (!val) {
-            this.previewElement.innerHTML = '<span class="preview-placeholder">Preview will appear here</span>';
+        const value = this.input.value.trim();
+        if (!value) {
+            this.previewElement.innerHTML = '<span class="preview-placeholder">Equation preview</span>';
             return;
         }
 
-        const formatted = this.formatDisplay(val);
-
         if (typeof katex !== 'undefined') {
             try {
-                const latex = this.toLatex(val);
-                katex.render(latex, this.previewElement, { throwOnError: false, displayMode: false });
-            } catch (e) {
-                this.previewElement.textContent = formatted;
+                katex.render(this.toLatex(value), this.previewElement, { throwOnError: false });
+                return;
+            } catch (error) {
+                this.previewElement.textContent = value;
+                return;
             }
-        } else {
-            this.previewElement.textContent = formatted;
         }
+
+        this.previewElement.textContent = value;
     }
 
-    toLatex(expr) {
-        let latex = expr;
-
-        // Order matters - do complex patterns first
-        latex = latex.replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}');
-        latex = latex.replace(/abs\(([^)]+)\)/g, '|$1|');
-        latex = latex.replace(/log10\(/g, '\\log_{10}(');
-
-        // Functions
-        const funcs = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'sinh', 'cosh', 'tanh',
-            'arcsin', 'arccos', 'arctan', 'ln', 'log', 'floor', 'ceil', 'sign'];
-        funcs.forEach(f => {
-            latex = latex.replace(new RegExp(f + '\\(', 'g'), '\\' + f + '(');
-        });
-
-        // Symbols
-        latex = latex.replace(/theta/g, '\\theta');
-        latex = latex.replace(/pi/g, '\\pi');
-        latex = latex.replace(/\*/g, '\\cdot ');
-        latex = latex.replace(/>=/g, '\\geq ');
-        latex = latex.replace(/<=/g, '\\leq ');
-        latex = latex.replace(/!=/g, '\\neq ');
-
-        // Powers
-        latex = latex.replace(/\^(\d+)/g, '^{$1}');
-        latex = latex.replace(/\^([a-zA-Z])/g, '^{$1}');
-
-        return latex;
-    }
-
-    formatDisplay(expr) {
-        return expr
-            .replace(/\*/g, '×')
-            .replace(/\//g, '÷')
-            .replace(/sqrt/g, '√')
-            .replace(/theta/g, 'θ')
-            .replace(/pi/g, 'π')
-            .replace(/>=/g, '≥')
-            .replace(/<=/g, '≤')
-            .replace(/!=/g, '≠');
+    toLatex(expression) {
+        return expression
+            .replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}')
+            .replace(/abs\(([^)]+)\)/g, '|$1|')
+            .replace(/log10\(/g, '\\log_{10}(')
+            .replace(/\*/g, '\\cdot ')
+            .replace(/>=/g, '\\geq ')
+            .replace(/<=/g, '\\leq ')
+            .replace(/!=/g, '\\neq ')
+            .replace(/theta/g, '\\theta')
+            .replace(/pi/g, '\\pi')
+            .replace(/\^(\d+)/g, '^{$1}')
+            .replace(/\^([a-zA-Z])/g, '^{$1}');
     }
 
     attachEventListeners() {
@@ -420,7 +336,6 @@ class MathKeyboard {
     }
 }
 
-// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('equationInput');
     if (input) {
